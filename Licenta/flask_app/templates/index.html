@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+    <title>{% block title %} GeoVenture {% endblock %}</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"/>
+</head>
+
+<div class="menu">
+    <span class="title">Welcome</span>
+    <div class="top-buttons">
+        <button type="button" id="register" class="p5" onclick="window.location.href='{{ url_for('register') }}'">Sign Up</button>
+        <button type="button" id="login" class="p5" onclick="window.location.href='{{ url_for('login') }}'">Log In</button>
+    </div>
+
+    <div class="or p5">or</div>
+
+    <div class="bottom-buttons">
+        <button type="button" id="guest" class="p5" onclick="window.location.href='{{ url_for('guest') }}'">Play as Guest</button>
+    </div>
+
+</div>
+
+{% endblock %}

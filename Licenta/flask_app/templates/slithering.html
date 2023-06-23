@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+    <title>{% block title %}GeoVenture{% endblock %}</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/guest.css') }}"/>
+</head>
+
+<body>
+    <div class="slithering-container">
+        <div class="slithering-card">
+            <img id="gifDisplay" src="" alt="GIF" />
+            <div id="countdown">120</div>
+        </div>
+    </div>
+
+    <div>
+        <input type="text" id="input" placeholder="Enter the country name" />
+        <button onclick="checkInput()">Guess</button>
+    </div>
+
+    <script src="/static/js/slitheringGame.js"></script>
+</body>
+{% endblock %}

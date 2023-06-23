@@ -1,0 +1,101 @@
+* {
+  font-size: 1.5rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  background-image: url('/static/imgs/desktop-wallpaper-malaiesti-valley-romania-mountain-romania-romanian.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg-button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.svg-button svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  border-radius: 5px;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  background: #2b9948;
+  box-shadow: 0 9px #154d24;
+}
+
+button:hover{
+  background: #268740;
+}
+
+button:active{
+  background-color: #268740;
+  box-shadow: 0 5px #0e3619;
+  transform: translateY(4px);
+}
+
+body > * {
+  scale: 1;
+}
+
+.menu {
+  background: #00000080;
+  display: flex;
+  color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 50px;
+  border-radius: 14px;
+}
+
+.p5{
+  margin: 5px;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  font-size: 4rem;
+  text-transform: uppercase;
+}
+
+.top-buttons{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 5px;
+}
+
+.bottom-buttons{
+  width: 100%;
+}
+
+.or {
+  display: flex;
+  justify-content: center;
+}
+
+.top-buttons button{
+  flex-grow: 1;
+}
+
+@media (max-width: 780px)
+{
+  * {
+    width: 50vw;
+    font-size: 2.5vw;
+  }
+}

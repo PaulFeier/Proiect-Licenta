@@ -1,0 +1,40 @@
+-- DROP TABLE IF EXISTS products;
+-- DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS cart;
+--
+-- CREATE TABLE IF NOT EXISTS users (
+--     id INTEGER PRIMARY KEY AUTOINCREMENT,
+--     email TEXT NOT NULL,
+--     username TEXT NOT NULL,
+--     password TEXT NOT NULL,
+--     admin BOOLEAN
+-- );
+--
+-- CREATE TABLE IF NOT EXISTS products (
+--     id INTEGER PRIMARY KEY AUTOINCREMENT,
+-- --     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--     image_url TEXT NOT NULL,
+--     name TEXT NOT NULL,
+--     type TEXT NOT NULL,
+--     price INTEGER NOT NULL,
+--     stock INTEGER
+-- );
+
+-- CREATE TABLE IF NOT EXISTS cart (
+--     id INTEGER PRIMARY KEY AUTOINCREMENT,
+--     item_id INTEGER NOT NULL,
+--     item_count INTEGER NOT NULL
+-- );
+
+CREATE TABLE IF NOT EXISTS quiz (
+    quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT UNIQUE NOT NULL,
+    description TEXT NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS question (
+    question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quiz_id INTEGER UNIQUE NOT NULL,
+    description TEXT NOT NULL
+);

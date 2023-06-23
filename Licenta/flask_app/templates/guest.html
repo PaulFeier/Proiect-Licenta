@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+  <title>{% block title %} GeoVenture {% endblock %}</title>
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/guest.css') }}"/>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('home') }}">GeoVenture</a>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <div id="autocompleteResults"></div>
+        </div>
+        <ul class="navbar-items">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#featured">Featured</a></li>
+            <li><a href="#review">Review</a></li>
+            <li class="user">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('profile') }}">{{ current_user.username }}</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">Sign Up</a>
+                    <a href="{{ url_for('login') }}">Sign In</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+</header>
+  <div class="container">
+    <div class="cards">
+      <div class="card" onclick="window.location.href='{{ url_for('europe') }}'">
+        <b></b>
+        <img src="/static/imgs/Europe_map.png">
+        <div class="content" >
+          <p class="title" >Europe<br></p>
+          <!-- <span> pt subtitle -->
+        </div>
+      </div>
+
+      <div class="card" onclick="window.location.href='{{ url_for('north_america') }}'">
+        <b></b>
+        <img src="/static/imgs/North-America_map.png">
+        <div class="content" >
+          <p class="title" >North America<br></p>
+        </div>
+      </div>
+
+      <div class="card" onclick="window.location.href='{{ url_for('usa') }}'">
+        <b></b>
+        <img src="/static/imgs/USA_map.png">
+        <div class="content" >
+          <p class="title" >USA<br></p>
+        </div>
+      </div>
+
+      <div class="card" onclick="window.location.href='{{ url_for('romania') }}'">
+        <b></b>
+        <img src="/static/imgs/Romania_map.png">
+        <div class="content" >
+          <p class="title" >Romania<br></p>
+        </div>
+      </div>
+
+      <div class="card" onclick="window.location.href='{{ url_for('africa') }}'">
+        <b></b>
+        <img src="/static/imgs/Africa_map.png">
+        <div class="content" >
+          <p class="title" >Africa<br></p>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </div>
+
+    <div class="slithering-container">
+        <div class="slithering-card" onclick="window.location.href='{{ url_for('slithering') }}'">
+          <img id="gifDisplay" src="" alt="GIF" />
+
+        </div>
+    </div>
+<script src="/static/js/displaySlitheringGifs.js"></script>
+</body>
+{% endblock %}
