@@ -1,0 +1,74 @@
+.stats {
+  position: absolute;
+  top: 20px;
+  left: 10%;
+  transform: translateX(-50%);
+  width: 200px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  animation: Shadow 2s infinite alternate;
+}
+
+p {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background-color: #f2f2f2;
+  margin: 0 0 10px;
+}
+
+svg {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glowShadow 6s infinite alternate;
+}
+
+@keyframes Shadow {
+  0% {
+    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.4));
+  }
+  100% {
+    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.4));
+  }
+}
+
+/* Animation for glowing shadow */
+@keyframes glowShadow {
+  0% {
+    filter: drop-shadow(0 0 20px rgba(102, 100, 34, 0.6));
+  }
+  20% {
+    filter: drop-shadow(0 0 20px rgba(151, 144, 51, 0.6));
+  }
+  40% {
+    filter: drop-shadow(0 0 20px rgba(189, 177, 101, 0.6));
+  }
+  60% {
+    filter: drop-shadow(0 0 20px rgba(212, 171, 66, 0.6));
+  }
+  80% {
+    filter: drop-shadow(0 0 20px rgba(204, 146, 18, 0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 20px rgba(143, 64, 13, 0.6));
+  }
+}
+
+/* Animation for rotating shadow */
+@keyframes rotateShadow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

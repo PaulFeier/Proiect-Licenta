@@ -37,6 +37,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     admin = db.Column(db.Boolean, default=False)
+    registration_date = db.Column(db.DateTime, nullable=False)
+    points = db.Column(db.Integer, default=0)
     user_quizzes = relationship('UserQuiz', backref='user', lazy=True)
 
 
@@ -44,15 +46,7 @@ class Quiz(db.Model):
     quiz_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(25), unique=True, nullable=False)
     description = db.Column(db.String(50), unique=True, nullable=False)
-    questions = relationship('Question', backref='quiz', lazy=True)
     user_quizzes = relationship('UserQuiz', backref='quiz', lazy=True)
-
-
-class Question(db.Model):
-    question_id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.quiz_id'), nullable=False)
-    question_text = db.Column(db.String(100), unique=True, nullable=False)
-    correct_answer = db.Column(db.String(50), nullable=False)
 
 
 class UserQuiz(db.Model):
@@ -61,6 +55,8 @@ class UserQuiz(db.Model):
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.quiz_id'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     attempt_date = db.Column(db.DateTime, nullable=False)
+    time_taken = db.Column(db.Float, nullable=False)
+    accuracy = db.Column(db.Float, nullable=False)
 
 
 class Leaderboard(db.Model):
@@ -69,6 +65,141 @@ class Leaderboard(db.Model):
     total_score = db.Column(db.Integer, nullable=False)
     rank = db.Column(db.Integer, nullable=False)
     last_update = db.Column(db.DateTime, nullable=False)
+
+
+@app.route('/update-score/<int:user_id>/<int:score>', methods=['POST'])
+def update_score(user_id, score):
+    user = User.query.get(user_id)
+    if user:
+        if game_completed(user_id):
+            user.points += score
+            db.session.commit()
+            return jsonify({'message': 'Score updated successfully'})
+        else:
+            return jsonify({'message': 'Game not completed yet'})
+    else:
+        return jsonify({'message': 'User not found'}), 404
+
+
+# Function to check if the game is completed
+def game_completed(user_id):
+    user = User.query.get(user_id)
+    if user:
+        if user.points >= 1:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+# Function to calculate the additional points based on the time taken
+def calculate_additional_points(time_taken):
+    max_time = 5 * 60  # 5 minutes in seconds
+    max_additional_points = 200
+    time_remaining = max_time - time_taken
+    if time_remaining > 0:
+        additional_points = (time_remaining / max_time) * max_additional_points
+    else:
+        additional_points = 0
+    return additional_points
+
+
+# Function to process the quiz submission
+def process_quiz_submission(quiz):
+
+    score = 250
+    accuracy = 1.0
+    timer = 240.0
+
+    user_quiz = UserQuiz.query.filter_by(user=current_user, quiz=quiz).first()
+    if user_quiz:
+        if score > user_quiz.score or (score == user_quiz.score and timer < user_quiz.timer):
+            user_quiz.score = score
+            user_quiz.accuracy = accuracy
+            user_quiz.timer = timer
+            user_quiz.attempt_date = datetime.datetime.now()
+            db.session.commit()
+    else:
+        user_quiz = UserQuiz(
+            user=current_user,
+            quiz=quiz,
+            score=score,
+            accuracy=accuracy,
+            timer=timer,
+            attempt_date=datetime.datetime.now()
+        )
+        db.session.add(user_quiz)
+        db.session.commit()
+
+    return score, accuracy, timer
+
+
+# Flask route to complete the quiz
+@app.route('/complete-quiz/', methods=['POST'])
+@login_required
+def complete_quiz():
+    data = request.get_json()
+    quiz_id = data.get('quiz_id')
+    time_taken = data.get('time_taken')
+    accuracy = data.get('accuracy')
+
+    user_quiz = UserQuiz.query.filter_by(user_id=current_user.id, quiz_id=quiz_id).first()
+
+    if user_quiz is None:
+        # First attempt at the quiz, store the results
+        score = calculate_score(time_taken, accuracy)
+        additional_points = calculate_additional_points(time_taken)
+        total_score = score + additional_points
+        new_user_quiz = UserQuiz(
+            user_id=current_user.id,
+            quiz_id=quiz_id,
+            score=total_score,
+            attempt_date=datetime.datetime.utcnow(),
+            time_taken=time_taken,
+            accuracy=accuracy
+        )
+        db.session.add(new_user_quiz)
+        db.session.commit()
+        flash('Quiz completed successfully!', 'success')
+    else:
+        # User has attempted the quiz before, compare with personal best
+        if time_taken < user_quiz.time_taken and accuracy > user_quiz.accuracy:
+            # Better time and better accuracy, update the personal best
+            user_quiz.time_taken = time_taken
+            user_quiz.accuracy = accuracy
+            user_quiz.score = calculate_score(time_taken, accuracy)
+            db.session.commit()
+            flash('Congratulations! You have set a new personal best!', 'success')
+        else:
+            flash('Quiz completed successfully!', 'success')
+
+    return jsonify({'message': 'Quiz completed successfully'})
+
+
+def calculate_score(time_taken, accuracy):
+    max_time = 300
+    max_accuracy = 100
+    time_weight = 0.8
+    accuracy_weight = 0.2
+
+    normalized_time = min(time_taken / max_time, 1)
+    normalized_accuracy = accuracy / max_accuracy
+
+    score = (time_weight * (1 - normalized_time)) + (accuracy_weight * normalized_accuracy)
+
+    scaled_score = score * 500
+
+    rounded_score = int(round(scaled_score))
+
+    return rounded_score
+
+
+
+@app.route('/leaderboard')
+def leaderboard():
+    score = int(request.args.get('score', 0))
+    return render_template('leaderboard.html', score=score)
 
 
 @login_manager.user_loader
@@ -122,7 +253,13 @@ def register():
 
         hashed_password = generate_password_hash(password, method='sha256')
 
-        new_user = User(email=email, username=name, password=hashed_password, admin=False)
+        new_user = User(
+            email=email,
+            username=name,
+            password=hashed_password,
+            admin=False,
+            registration_date=datetime.datetime.now()
+        )
 
         db.session.add(new_user)
         db.session.commit()
@@ -164,16 +301,6 @@ def logout():
 
 @app.route('/')
 def index():
-    return render_template('guest.html')
-
-
-@app.route('/home/')
-def home():
-    return render_template('guest.html')
-
-
-@app.route('/guest/')
-def guest():
     return render_template('guest.html')
 
 

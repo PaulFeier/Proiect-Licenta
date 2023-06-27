@@ -8,15 +8,15 @@
   <header>
     <nav class="navbar">
         <div class="logo">
-            <a href="{{ url_for('home') }}">GeoVenture</a>
+            <a href="{{ url_for('index') }}">GeoVenture</a>
         </div>
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search...">
             <div id="autocompleteResults"></div>
         </div>
         <ul class="navbar-items">
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
             <li><a href="#featured">Featured</a></li>
             <li><a href="#review">Review</a></li>
             <li class="user">
@@ -33,6 +33,22 @@
 </header>
   <div class="container">
     <div class="cards">
+      <div class="card" onclick="window.location.href='{{ url_for('romania') }}'">
+        <b></b>
+        <img src="/static/imgs/Romania_map.png">
+        <div class="content" >
+          <p class="title" >Romania<br></p>
+        </div>
+      </div>
+
+      <div class="card" onclick="window.location.href='{{ url_for('usa') }}'">
+        <b></b>
+        <img src="/static/imgs/USA_map.png">
+        <div class="content" >
+          <p class="title" >USA<br></p>
+        </div>
+      </div>
+
       <div class="card" onclick="window.location.href='{{ url_for('europe') }}'">
         <b></b>
         <img src="/static/imgs/Europe_map.png">
@@ -47,22 +63,6 @@
         <img src="/static/imgs/North-America_map.png">
         <div class="content" >
           <p class="title" >North America<br></p>
-        </div>
-      </div>
-
-      <div class="card" onclick="window.location.href='{{ url_for('usa') }}'">
-        <b></b>
-        <img src="/static/imgs/USA_map.png">
-        <div class="content" >
-          <p class="title" >USA<br></p>
-        </div>
-      </div>
-
-      <div class="card" onclick="window.location.href='{{ url_for('romania') }}'">
-        <b></b>
-        <img src="/static/imgs/Romania_map.png">
-        <div class="content" >
-          <p class="title" >Romania<br></p>
         </div>
       </div>
 

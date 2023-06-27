@@ -1,14 +1,26 @@
 let unsuccessfulTries = 0;
 
-const paths = [...document.querySelectorAll('path')]
-const availablePaths = [...paths];  // 2nd array so that I won't remove the elements from the 1st one;
+const paths = [...document.querySelectorAll('path')];
+
+for (let i = paths.length - 1; i >= 0; i--) {
+  const id = paths[i].getAttribute('id');
+  if (id === '1' || id === '2' || id === '3') {
+    console.log(paths[i]);
+    paths.splice(i, 1);
+  }
+}
+
+const availablePaths = [...paths]; // 2nd array so that I won't remove the elements from the 1st one
 
 let randomId = availablePaths[Math.floor(Math.random() * availablePaths.length)];
+
+let totalAttempts = 0;
+let correctGuesses = 0;
 
 function replace(id, colour) {
   const path = document.getElementById(id);
   if (path === null) {
-    console.log('Element not found.');
+    // do nothing
   } else {
     path.style.fill = colour;
   }
@@ -17,19 +29,22 @@ function replace(id, colour) {
 function handleClick(event) {
   console.log(event.target.id);
   let clickedId = event.target;
-
-
-
+  totalAttempts++;
   if (clickedId.id === randomId.id && unsuccessfulTries <= 2) {
     // correct element was clicked
+    correctGuesses++;
+
+    const correctCounty = document.getElementById('correct');
+    correctCounty.textContent = 'Correct: ' + correctGuesses + '/' + paths.length;
+
     if (unsuccessfulTries === 0)
       replace(clickedId.id, "#7ed46b");
     else if (unsuccessfulTries === 1)
       replace(clickedId.id, "#fbfb3f");
     else if (unsuccessfulTries === 2)
-      replace(clickedId.id, "#ffa159")
+      replace(clickedId.id, "#ffa159");
     removeElementFromList(clickedId);
-  } else if (availablePaths.includes(clickedId)){
+  } else if (availablePaths.includes(clickedId)) {
     // incorrect element was clicked
     unsuccessfulTries++;
 
@@ -41,10 +56,48 @@ function handleClick(event) {
       removeElementFromList(randomId);
     }
 
+    const accuracyPercentage = ((correctGuesses / totalAttempts) * 100).toFixed(2);
+    const accuracyElement = document.getElementById('accuracy');
+    accuracyElement.textContent = `Accuracy: ${accuracyPercentage}%`;
+
     var outputTries = document.getElementById("tries");
     outputTries.textContent = "Tries left: " + (3 - unsuccessfulTries);
+
+    const currentCounty = document.getElementById('current');
+    currentCounty.textContent = 'Current: ' + (paths.length - availablePaths.length + 1) + '/' + paths.length;
+
   }
 }
+
+function formatTime(minutes, seconds, milliseconds) {
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+  const formattedMilliseconds = milliseconds.toString().padStart(3, '0');
+  const millisecondsSubstring = formattedMilliseconds.substring(0, 3);
+  return `${formattedMinutes}:${formattedSeconds}.${millisecondsSubstring}`;
+}
+
+
+function startTimer() {
+  let startTime = Date.now();
+  const timer = document.getElementById('timer');
+
+  const timerInterval = setInterval(() => {
+    const currentTime = Date.now();
+    const elapsedMilliseconds = currentTime - startTime;
+    const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+    const minutesElapsed = Math.floor(elapsedSeconds / 60);
+    const secondsElapsed = elapsedSeconds % 60;
+    const millisecondsElapsed = elapsedMilliseconds % 1000;
+
+    timer.textContent = 'Time: ' + formatTime(minutesElapsed, secondsElapsed, millisecondsElapsed);
+
+    if (availablePaths.length === 0) {
+      clearInterval(timerInterval);
+    }
+  }, 1);
+}
+
 
 function removeElementFromList(elementToRemove) {
   // remove the clicked element from the list
@@ -57,23 +110,44 @@ function removeElementFromList(elementToRemove) {
   unsuccessfulTries = 0;
   elementToRemove.removeEventListener('click', handleClick);
 
-  const style = elementToRemove.getAttribute('style');
-  replace(style);
-  elementToRemove.setAttribute('style', style);
-  // generate a new random element
-  randomId = availablePaths[Math.floor(Math.random() * availablePaths.length)];
-  console.log("*:", randomId.id.toUpperCase());
-
-  var outputName = document.getElementById("id");
-  outputName.textContent = randomId.id.toUpperCase();
-
- var outputTries = document.getElementById("tries");
-  outputTries.textContent = "Tries left: " + (3 - unsuccessfulTries);
-
-  // check if game is over
   if (availablePaths.length === 0) {
-    alert('Congratulations, you won!');
+      const score = calculateScore();
+      console.log('Score:', score);
+      const leaderboardUrl = `/leaderboard?score=${score}`;
+      window.location.href = leaderboardUrl;
+    }
+  else {
+    const style = elementToRemove.getAttribute('style');
+    replace(style);
+    elementToRemove.setAttribute('style', style);
+    // generate a new random element
+    randomId = availablePaths[Math.floor(Math.random() * availablePaths.length)];
+    console.log("*:", randomId.id.toUpperCase());
+
+    const outputName = document.getElementById("id");
+    outputName.textContent = randomId.id.toUpperCase();
+
+    const outputTries = document.getElementById("tries");
+    outputTries.textContent = "Tries left: " + (3 - unsuccessfulTries);
+
+    const accuracyPercentage = ((correctGuesses / totalAttempts) * 100).toFixed(2);
+    const accuracyElement = document.getElementById('accuracy');
+    accuracyElement.textContent = `Accuracy: ${accuracyPercentage}%`;
+
+    const currentCounty = document.getElementById('current');
+    currentCounty.textContent = 'Current: ' + (paths.length - availablePaths.length + 1) + '/' + paths.length;
+
+    const correctCounty = document.getElementById('correct');
+    correctCounty.textContent = 'Correct: ' + correctGuesses + '/' + paths.length;
   }
+
+}
+
+function calculateScore() {
+  const maxScore = 500;
+  const accuracyPercentage = (correctGuesses / totalAttempts) * 100;
+  const score = Math.round((accuracyPercentage / 100) * maxScore);
+  return score;
 }
 
 function playGame() {
@@ -83,13 +157,25 @@ function playGame() {
 
   console.log("*: ", randomId.id);
 
-  var outputName = document.getElementById("id");
-  var outputTries = document.getElementById("tries");
+  const outputName = document.getElementById("id");
+  const outputTries = document.getElementById("tries");
 
   outputName.textContent = randomId.id.toUpperCase();
   outputTries.textContent = "Tries left: " + (3 - unsuccessfulTries);
   console.log(availablePaths.length);
+
+  const accuracyPercentage = ((correctGuesses / totalAttempts) * 100).toFixed(2);
+  const accuracyElement = document.getElementById('accuracy');
+  accuracyElement.textContent = `Accuracy: 0.00%`;
+
+  const currentCounty = document.getElementById('current');
+  currentCounty.textContent = 'Current: ' + (paths.length - availablePaths.length + 1) + '/' + paths.length;
+
+  const correctCounty = document.getElementById('correct');
+  correctCounty.textContent = 'Correct: ' + correctGuesses + '/' + paths.length;
+
+  startTimer();
 }
 
-// call playGame to start the game
+// Call playGame to start the game
 playGame();
