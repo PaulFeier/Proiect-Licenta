@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<title>{% block title %} GeoVenture {% endblock %}</title>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/flags.css') }}"/>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/guest.css') }}"/>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/SVG-games.css') }}"/>
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('index') }}">GeoVenture</a>
+        </div>
+        <ul class="navbar-items">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
+            <li><a href="#featured">Featured</a></li>
+            <li class="user">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('profile') }}">{{ current_user.username }}</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">Sign Up</a>
+                    <a href="{{ url_for('login') }}">Sign In</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+  </header>
+
+<!--    <div class="stats">-->
+<!--      <p id="id"></p>-->
+<!--      <p id="tries">Tries Left</p>-->
+<!--      <p id="accuracy"></p>-->
+<!--    </div>-->
+
+<!--    <div class="stats" style="position: absolute; left: 50%">-->
+<!--      <p id="timer" >Time: 00:00</p>-->
+<!--    </div>-->
+
+<!--    <div class="stats" style="position: absolute; left: 90%">-->
+<!--      <p id="current"></p>-->
+<!--      <p id="correct"></p>-->
+<!--    </div>-->
+
+    <div id="flag-container"></div>
+        <input id="num-of-flags" type="number" placeholder="Enter the number of flags">
+    <button onclick="displayRandomFlag()">Start Game</button>
+
+    <script src="/static/js/flags.js"></script>
+</body>
+
+{% endblock %}

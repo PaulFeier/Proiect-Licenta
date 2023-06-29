@@ -195,11 +195,11 @@ def calculate_score(time_taken, accuracy):
     return rounded_score
 
 
-
 @app.route('/leaderboard')
 def leaderboard():
-    score = int(request.args.get('score', 0))
-    return render_template('leaderboard.html', score=score)
+    users = User.query.order_by(User.points.desc()).all()
+
+    return render_template('leaderboard.html', users=users)
 
 
 @login_manager.user_loader
@@ -264,7 +264,11 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect('/')
+        login_user(new_user)
+        token = generate_token(new_user)
+        response = make_response(redirect(url_for('index')))  # Redirect to homepage
+        response.set_cookie('access_token', token, httponly=True)
+        return response
 
     return render_template('register.html')
 
@@ -282,10 +286,8 @@ def login():
             return redirect(url_for('login'))  # Redirect to login page again
 
         login_user(user)
-        token = generate_token(user)
-        response = make_response(redirect(url_for('index')))  # Redirect to homepage
-        response.set_cookie('access_token', token, httponly=True)
-        return response
+
+        return redirect('/')
 
     return render_template('login.html')
 
@@ -356,9 +358,13 @@ def randomQuiz():
     return render_template("africa-countries.html")
 
 
+@app.route('/flags/')
+def flags():
+    return render_template("flags.html")
+
+
 if __name__ == '__main__':
     with app.app_context():
         # db.drop_all()
         db.create_all()
     app.run(host="localhost", port=5000, debug=True)
-

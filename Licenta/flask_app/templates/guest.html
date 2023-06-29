@@ -10,15 +10,14 @@
         <div class="logo">
             <a href="{{ url_for('index') }}">GeoVenture</a>
         </div>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <div id="autocompleteResults"></div>
-        </div>
+<!--        <div class="search-container">-->
+<!--            <input type="text" id="searchInput" placeholder="Search...">-->
+<!--            <div id="autocompleteResults"></div>-->
+<!--        </div>-->
         <ul class="navbar-items">
             <li><a href="{{ url_for('index') }}">Home</a></li>
             <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
             <li><a href="#featured">Featured</a></li>
-            <li><a href="#review">Review</a></li>
             <li class="user">
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('profile') }}">{{ current_user.username }}</a>
@@ -74,15 +73,18 @@
         </div>
       </div>
 
+
+
     </div>
     </div>
   </div>
 
-    <div class="slithering-container">
-        <div class="slithering-card" onclick="window.location.href='{{ url_for('slithering') }}'">
-          <img id="gifDisplay" src="" alt="GIF" />
+    <div class="slithering-card" onclick="window.location.href='{{ url_for('slithering') }}'">
+      <img id="gifDisplay" src="" alt="GIF" />
+    </div>
 
-        </div>
+    <div class="slithering-card" onclick="window.location.href='{{ url_for('flags') }}'" >
+        <img src="/static/imgs/flags-game.gif" alt="GIF">
     </div>
 <script src="/static/js/displaySlitheringGifs.js"></script>
 </body>

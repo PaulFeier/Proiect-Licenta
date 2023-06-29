@@ -3,6 +3,7 @@
 <head>
     <title>{% block title %} USA {% endblock %}</title>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/SVG-games.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/guest.css') }}"/>
   <style>
   .state {fill:#c0c0c0;}                        /* default color for all states not specified below */
   .borders {stroke:black; stroke-width:0.75}    /* color and width of borders between states */
@@ -19,6 +20,29 @@ Place this code in the empty space below. */
 </head>
 
 <body>
+
+  <header>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('index') }}">GeoVenture</a>
+        </div>
+        <ul class="navbar-items">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
+            <li><a href="#featured">Featured</a></li>
+            <li class="user">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('profile') }}">{{ current_user.username }}</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}">Sign Up</a>
+                    <a href="{{ url_for('login') }}">Sign In</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+  </header>
+
   <div class="container">
     <div class="stats">
       <p id="id"></p>

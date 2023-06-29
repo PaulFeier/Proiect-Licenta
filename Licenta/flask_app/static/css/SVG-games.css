@@ -1,6 +1,6 @@
 .stats {
   position: absolute;
-  top: 20px;
+  top: 100px;
   left: 10%;
   transform: translateX(-50%);
   width: 200px;

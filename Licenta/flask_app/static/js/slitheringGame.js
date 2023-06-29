@@ -14,8 +14,15 @@ const totalTime = 120; // Total time for the game in seconds
 let timeLeft = totalTime;
 let timer;
 
+let timeStarted = false;
+
 // Function to display the next gif and update the countdown
 function displayNextGif() {
+  if (timeStarted === false) {
+    startTimer();
+    timeStarted = true;
+  }
+
   if (countryArray.length === 0) {
     // All countries have been guessed
     clearInterval(timer);
@@ -49,18 +56,43 @@ function checkInput() {
 // Start the game
 displayNextGif();
 
+
 userInput.addEventListener("keyup", function (event) {
   if (event.keyCode === 13) {
     checkInput();
   }
 });
 
-timer = setInterval(() => {
-  if (timeLeft > 0) {
-    timeLeft--;
-    countdownElement.textContent = timeLeft;
-  } else {
-    clearInterval(timer);
-    alert("Time's up! Your score: " + score);
-  }
-}, 1000);
+function formatTime(minutes, seconds, milliseconds) {
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+  const formattedMilliseconds = milliseconds.toString().padStart(3, '0');
+  const millisecondsSubstring = formattedMilliseconds.substring(0, 3);
+  return `${formattedMinutes}:${formattedSeconds}.${millisecondsSubstring}`;
+}
+
+function startTimer() {
+  const countdownDuration = 2 * 60 * 1000; // 2 minutes in milliseconds
+  let startTime = Date.now() + countdownDuration; // Set the start time to future time
+  const timerElement = document.getElementById('timer');
+
+  const timerInterval = setInterval(() => {
+    const currentTime = Date.now();
+    const remainingMilliseconds = startTime - currentTime;
+
+    if (remainingMilliseconds <= 0) {
+      clearInterval(timerInterval);
+      // Handle timer expiration
+      return;
+    }
+
+    const elapsedSeconds = Math.floor(remainingMilliseconds / 1000);
+    const minutesElapsed = Math.floor(elapsedSeconds / 60);
+    const secondsElapsed = elapsedSeconds % 60;
+    const millisecondsElapsed = remainingMilliseconds % 1000;
+
+    timerElement.textContent = 'Time: ' + formatTime(minutesElapsed, secondsElapsed, millisecondsElapsed);
+  }, 1);
+}
+
+
